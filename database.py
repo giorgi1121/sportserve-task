@@ -1,3 +1,6 @@
+import pandas as pd
+
+
 def create_addresses_table(conn):
     """Create the addresses table."""
     with conn.cursor() as cursor:
@@ -86,3 +89,102 @@ def create_tables(conn):
     create_users_table(conn)
     conn.commit()
     print("Tables created successfully.")
+
+
+def insert_address(cursor, row):
+    """Insert an address and return its generated id."""
+    query = """
+        INSERT INTO addresses (city, street_name, street_address, zip_code, state, country, latitude, longitude)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s) RETURNING id;
+    """
+    cursor.execute(
+        query,
+        (
+            row["address.city"],
+            row["address.street_name"],
+            row["address.street_address"],
+            row["address.zip_code"],
+            row["address.state"],
+            row["address.country"],
+            row["address.coordinates.lat"],
+            row["address.coordinates.lng"],
+        ),
+    )
+    return cursor.fetchone()[0]
+
+
+def insert_employment(cursor, row):
+    """Insert employment data and return its generated id."""
+    query = """
+        INSERT INTO employment (title, key_skill)
+        VALUES (%s, %s) RETURNING id;
+    """
+    cursor.execute(query, (row["employment.title"], row["employment.key_skill"]))
+    return cursor.fetchone()[0]
+
+
+def insert_subscription(cursor, row):
+    """Insert subscription data and return its generated id."""
+    query = """
+        INSERT INTO subscriptions (plan, status, payment_method, term)
+        VALUES (%s, %s, %s, %s) RETURNING id;
+    """
+    cursor.execute(
+        query,
+        (
+            row["subscription.plan"],
+            row["subscription.status"],
+            row["subscription.payment_method"],
+            row["subscription.term"],
+        ),
+    )
+    return cursor.fetchone()[0]
+
+
+def insert_user(cursor, row, address_id, employment_id, subscription_id):
+    """Insert a user record using the given foreign key ids."""
+    query = """
+        INSERT INTO users (uid, password, first_name, last_name, username, email, avatar, gender,
+                           phone_number, social_insurance_number, date_of_birth, credit_card_number,
+                           address_id, employment_id, subscription_id)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+    """
+    cursor.execute(
+        query,
+        (
+            row["uid"],
+            row["password"],
+            row["first_name"],
+            row["last_name"],
+            row["username"],
+            row["email"],
+            row["avatar"],
+            row["gender"],
+            row["phone_number"],
+            row["social_insurance_number"],
+            row["date_of_birth"],
+            row["credit_card.cc_number"],
+            address_id,
+            employment_id,
+            subscription_id,
+        ),
+    )
+
+
+def load_normalized_data(conn, csv_file):
+    """Read CSV file and insert normalized data into the database."""
+    df = pd.read_csv(csv_file)
+    try:
+        with conn.cursor() as cursor:
+            for index, row in df.iterrows():
+                # Insert data into addresses, employment, and subscriptions tables at first
+                address_id = insert_address(cursor, row)
+                employment_id = insert_employment(cursor, row)
+                subscription_id = insert_subscription(cursor, row)
+                # Insert user records with foreign key references
+                insert_user(cursor, row, address_id, employment_id, subscription_id)
+        conn.commit()
+        print("Data loaded successfully into normalized tables.")
+    except Exception as e:
+        conn.rollback()
+        print("Error loading data:", e)
