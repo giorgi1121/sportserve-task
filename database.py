@@ -188,3 +188,36 @@ def load_normalized_data(conn, csv_file):
     except Exception as e:
         conn.rollback()
         print("Error loading data:", e)
+
+
+def most_common_properties(conn):
+    """
+    Query the database for the most common values of each relevant property.
+    Returns a dictionary where each key is a property and the value is a tuple (property_value, count).
+    """
+    results = {}
+    queries = {
+        "first_name": "SELECT first_name, COUNT(*) AS count FROM users GROUP BY first_name ORDER BY count DESC LIMIT 1;",
+        "last_name": "SELECT last_name, COUNT(*) AS count FROM users GROUP BY last_name ORDER BY count DESC LIMIT 1;",
+        "username": "SELECT username, COUNT(*) AS count FROM users GROUP BY username ORDER BY count DESC LIMIT 1;",
+        "gender": "SELECT gender, COUNT(*) AS count FROM users GROUP BY gender ORDER BY count DESC LIMIT 1;",
+        "birth_year": "SELECT EXTRACT(YEAR FROM date_of_birth) AS birth_year, COUNT(*) AS count FROM users GROUP BY birth_year ORDER BY count DESC LIMIT 1;",
+        "city": "SELECT city, COUNT(*) AS count FROM addresses GROUP BY city ORDER BY count DESC LIMIT 1;",
+        "state": "SELECT state, COUNT(*) AS count FROM addresses GROUP BY state ORDER BY count DESC LIMIT 1;",
+        "country": "SELECT country, COUNT(*) AS count FROM addresses GROUP BY country ORDER BY count DESC LIMIT 1;",
+        "street_name": "SELECT street_name, COUNT(*) AS count FROM addresses GROUP BY street_name ORDER BY count DESC LIMIT 1;",
+        "street_address": "SELECT street_address, COUNT(*) AS count FROM addresses GROUP BY street_address ORDER BY count DESC LIMIT 1;",
+        "zip_code": "SELECT zip_code, COUNT(*) AS count FROM addresses GROUP BY zip_code ORDER BY count DESC LIMIT 1;",
+        "employment_title": "SELECT title, COUNT(*) AS count FROM employment GROUP BY title ORDER BY count DESC LIMIT 1;",
+        "key_skill": "SELECT key_skill, COUNT(*) AS count FROM employment GROUP BY key_skill ORDER BY count DESC LIMIT 1;",
+        "subscription_plan": "SELECT plan, COUNT(*) AS count FROM subscriptions GROUP BY plan ORDER BY count DESC LIMIT 1;",
+        "subscription_status": "SELECT status, COUNT(*) AS count FROM subscriptions GROUP BY status ORDER BY count DESC LIMIT 1;",
+        "payment_method": "SELECT payment_method, COUNT(*) AS count FROM subscriptions GROUP BY payment_method ORDER BY count DESC LIMIT 1;",
+        "subscription_term": "SELECT term, COUNT(*) AS count FROM subscriptions GROUP BY term ORDER BY count DESC LIMIT 1;",
+    }
+
+    with conn.cursor() as cursor:
+        for prop, query in queries.items():
+            cursor.execute(query)
+            results[prop] = cursor.fetchone()
+    return results
