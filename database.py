@@ -190,6 +190,42 @@ def load_normalized_data(conn, csv_file):
         print("Error loading data:", e)
 
 
+def fetch_users(conn):
+    """Query users from the database with joined address, employment, and subscription data."""
+    query = """
+    SELECT
+        u.*,
+        a.city,
+        a.street_name,
+        a.street_address,
+        a.zip_code,
+        a.state,
+        a.country,
+        a.latitude,
+        a.longitude,
+        e.title AS employment_title,
+        e.key_skill,
+        s.plan AS subscription_plan,
+        s.status AS subscription_status,
+        s.payment_method,
+        s.term AS subscription_term
+    FROM users u
+    JOIN addresses a ON u.address_id = a.id
+    JOIN employment e ON u.employment_id = e.id
+    JOIN subscriptions s ON u.subscription_id = s.id;
+    """
+    try:
+        with conn.cursor() as cursor:
+            cursor.execute(query)
+            columns = [desc[0] for desc in cursor.description]
+            data = cursor.fetchall()
+            df = pd.DataFrame(data, columns=columns)
+        return df
+    except Exception as e:
+        print("Error fetching users:", e)
+        return pd.DataFrame()
+
+
 def most_common_properties(conn):
     """
     Query the database for the most common values of each relevant property.
