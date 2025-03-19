@@ -8,3 +8,4 @@ geopy==2.4.1
 networkx==3.4.2
 python-Levenshtein==0.27.1
 pre_commit==4.2.0
+python-dotenv==1.0.1
