@@ -127,18 +127,6 @@ sportserve-task/
 
 ---
 
-## Example Output
-### **1. Most Common Properties**
-![Most Common Properties](output_png/most_common_properties.png)
-
-### **2. Strong vs. Weak Groups**
-![Group Count](output_png/group_count.png)
-
-### **3. Group Sizes**
-![Group Sizes](output_png/group_sizes.png)
-
----
-
 ## Future Improvements
 - Optimize **database indexing** for faster queries.
 - Cache Most Common Properties.
