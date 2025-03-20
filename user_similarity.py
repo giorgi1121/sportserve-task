@@ -7,6 +7,8 @@ import pandas as pd
 from fuzzywuzzy import fuzz
 from geopy.distance import geodesic
 
+from util import get_csv_filepath
+
 
 def compare_personal(u1, u2):
     similar = []
@@ -177,7 +179,8 @@ def find_similar_users(users_df):
 
     # Save pairwise similarities
     pair_df = pd.DataFrame(comparisons)
-    pair_df.to_csv("pairwise_similarities.csv", index=False)
+    pair_csv_path = get_csv_filepath("pairwise_similarities.csv")
+    pair_df.to_csv(pair_csv_path, index=False)
     print("Pairwise similarities saved to pairwise_similarities.csv")
 
     # Build groups
@@ -197,8 +200,10 @@ def find_similar_users(users_df):
         }
     )
 
-    strong_df.to_csv("strong_groups.csv", index=False)
-    weak_df.to_csv("weak_groups.csv", index=False)
+    strong_csv_path = get_csv_filepath("strong_groups.csv")
+    weak_csv_path = get_csv_filepath("weak_groups.csv")
+    strong_df.to_csv(strong_csv_path, index=False)
+    weak_df.to_csv(weak_csv_path, index=False)
     print("Strong groups saved to strong_groups.csv")
     print("Weak groups saved to weak_groups.csv")
 

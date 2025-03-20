@@ -1,5 +1,7 @@
 import matplotlib.pyplot as plt
 
+from util import get_png_filepath
+
 
 def visualize_groups(strong_groups, weak_groups):
     """
@@ -22,8 +24,10 @@ def visualize_groups(strong_groups, weak_groups):
     plt.xlabel("Group Type")
     plt.ylabel("Number of Groups")
     plt.title("Count of Strong vs. Weak Groups")
-    plt.savefig("group_count.png")
+    group_count_path = get_png_filepath("group_count.png")
+    plt.savefig(group_count_path)
     plt.close()
+    print(f"Group count visualization saved to {group_count_path}")
 
     # Show distribution of group sizes for strong and weak groups
     strong_sizes = [len(grp) for grp in strong_groups]
@@ -44,8 +48,10 @@ def visualize_groups(strong_groups, weak_groups):
     axes[1].set_ylabel("Number of Users")
 
     plt.tight_layout()
-    plt.savefig("group_sizes.png")
+    group_sizes_path = get_png_filepath("group_sizes.png")
+    plt.savefig(group_sizes_path)
     plt.close()
+    print(f"Group sizes visualization saved to {group_sizes_path}")
 
 
 def visualize_common_properties(common_props):
@@ -81,5 +87,7 @@ def visualize_common_properties(common_props):
 
     plt.xticks(rotation=45, ha="right")
     plt.tight_layout()
-    plt.savefig("most_common_properties.png")
+    common_props_path = get_png_filepath("most_common_properties.png")
+    plt.savefig(common_props_path)
     plt.close()
+    print(f"Common properties visualization saved to {common_props_path}")
