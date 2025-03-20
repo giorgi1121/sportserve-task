@@ -3,6 +3,8 @@ import time
 import pandas as pd
 import requests
 
+from util import get_csv_filepath
+
 API_URL = "https://random-data-api.com/api/v2/users?size={batch_size}&response_type=json"
 MAX_RETRIES = 5
 INITIAL_DELAY = 0.5  # Starting delay for exponential backoff
@@ -45,7 +47,8 @@ def fetch_random_users(total=1000, batch_size=100):
 def save_users_to_csv(users, filename="random_users.csv"):
     """Normalize nested JSON and save to CSV."""
     df = pd.json_normalize(users)
-    df.to_csv(filename, index=False)
+    users_csv_path = get_csv_filepath(filename)
+    df.to_csv(users_csv_path, index=False)
     print(f"Saved {len(df)} users to {filename}")
 
 

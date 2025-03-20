@@ -9,6 +9,7 @@ from database import (
     most_common_properties,
 )
 from user_similarity import find_similar_users
+from util import get_csv_filepath
 from visualization import visualize_common_properties, visualize_groups
 
 
@@ -36,7 +37,8 @@ def main():
         )
 
         create_tables(conn)
-        load_normalized_data(conn, "random_users.csv")
+        users_csv_path = get_csv_filepath("random_users.csv")
+        load_normalized_data(conn, users_csv_path)
         common_props = most_common_properties(conn)
         print("Most Common Properties:", common_props)
 

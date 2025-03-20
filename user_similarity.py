@@ -212,7 +212,7 @@ def find_similar_users(users_df):
 
 if __name__ == "__main__":
     try:
-        users_df = pd.read_csv("random_users.csv")
+        users_df = pd.read_csv("output_csv/random_users.csv")
     except Exception as e:
         print("Error loading CSV file:", e)
         exit(1)
